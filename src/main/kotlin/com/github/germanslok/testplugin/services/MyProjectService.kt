@@ -1,7 +1,7 @@
 package com.github.germanslok.testplugin.services
 
-import com.intellij.openapi.project.Project
 import com.github.germanslok.testplugin.MyBundle
+import com.intellij.openapi.project.Project
 
 class MyProjectService(project: Project) {
 

@@ -1,11 +1,13 @@
 <idea-plugin>
-    <id>com.github.germanslok.testplugin</id>
-    <name>test-plugin</name>
-    <vendor>germans-lok</vendor>
+    <id>org.example.lv.germans.plugin</id>
+    <name>Pikachu insert </name>
+    <vendor email="germans.kuzmins@gmail.com" url="https://gitlab.com/Kuzmins">Kuzmins</vendor>
 
     <!-- Product and plugin compatibility requirements -->
     <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationService serviceImplementation="com.github.germanslok.testplugin.services.MyApplicationService"/>
@@ -16,4 +18,15 @@
         <listener class="com.github.germanslok.testplugin.listeners.MyProjectManagerListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </applicationListeners>
+
+    <actions>
+        <action id="com.github.germanslok.testplugin.PikachuInsertInJavaAction" class="com.github.germanslok.testplugin.PikachuInsertInJavaAction"
+                text="Insert Pikachu" description="Insert pikachu inside your code">
+            <add-to-group group-id="JavaGenerateGroup1" anchor="last"/>
+        </action>
+        <action id="com.github.germanslok.testplugin.PikachuInsertInKotlinAction" class="com.github.germanslok.testplugin.PikachuInsertInKotlinAction"
+                text="Insert Pikachu" description="Insert pikachu inside your code">
+            <add-to-group group-id="KotlinGenerateGroup" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>
