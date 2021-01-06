@@ -1,9 +1,7 @@
 # GitHub Actions Workflow created for testing and preparing the plugin release in following steps:
-# - validate Gradle Wrapper,
 # - run test and verifyPlugin tasks,
 # - run buildPlugin task and prepare artifact for the further tests,
-# - run IntelliJ Plugin Verifier,
-# - create a draft release.
+# - run IntelliJ Plugin Verifier trigger only on push inside master and develop.
 #
 # Workflow is triggered on push and pull_request events.
 #
@@ -94,7 +92,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
-          name: plugin-artifact
+          name: ${{ needs.build.outputs.artifact }}
           path: ./build/distributions/${{ needs.build.outputs.artifact }}
 
   # Verify built plugin using IntelliJ Plugin Verifier tool
