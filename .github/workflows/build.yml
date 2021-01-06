@@ -23,6 +23,11 @@ jobs:
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.properties.outputs.name }}
+      version: ${{ steps.properties.outputs.version }}
+      changelog: ${{ steps.properties.outputs.changelog }}
+      artifact: ${{ steps.properties.outputs.artifact }}
     steps:
 
       # Setup Java 11 environment for the next steps
