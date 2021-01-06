@@ -4,12 +4,6 @@
 # - run IntelliJ Plugin Verifier trigger only on push inside master and develop.
 #
 # Workflow is triggered on push and pull_request events.
-#
-# Docs:
-# - GitHub Actions: https://help.github.com/en/actions
-# - IntelliJ Plugin Verifier GitHub Action: https://github.com/ChrisCarini/intellij-platform-plugin-verifier-action
-#
-## JBIJPPTPL
 
 name: Build
 on:
@@ -40,27 +34,21 @@ jobs:
       - name: Fetch Sources
         uses: actions/checkout@v2
 
-      # Cache Gradle dependencies
-      - name: Setup Gradle Dependencies Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
-
-      # Cache Gradle Wrapper
-      - name: Setup Gradle Wrapper Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-
       # Run ktlint and tests
       - name: Run Linters and Test
-        run: ./gradlew check
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          job-id: jdk11
+          multi-cache-enabled: false
+          arguments: check
 
       # Run verifyPlugin Gradle task
       - name: Verify Plugin
-        run: ./gradlew verifyPlugin
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          job-id: jdk11
+          multi-cache-enabled: false
+          arguments: verifyPlugin
 
       # Publish test results
       - name: Publish Unit Test Results
@@ -85,7 +73,11 @@ jobs:
           echo "::set-output name=artifact::$ARTIFACT"
       # Build artifact using buildPlugin Gradle task
       - name: Build Plugin
-        run: ./gradlew buildPlugin
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          job-id: jdk11
+          multi-cache-enabled: false
+          arguments: buildPlugin
 
       # Upload plugin artifact to make it available in the next jobs
       - name: Upload artifact
@@ -113,20 +105,6 @@ jobs:
       - name: Fetch Sources
         uses: actions/checkout@v2
 
-      # Cache Gradle Dependencies
-      - name: Setup Gradle Dependencies Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', 'gradle.properties') }}
-
-      # Cache Gradle Wrapper
-      - name: Setup Gradle Wrapper Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-
       # Set environment variables
       - name: Export Properties
         id: properties
@@ -147,4 +125,8 @@ jobs:
 
       # Run IntelliJ Plugin Verifier action using GitHub Action
       - name: Verify Plugin
-        run: ./gradlew runPluginVerifier -Pplugin.verifier.home.dir=${{ steps.properties.outputs.pluginVerifierHomeDir }}
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          job-id: jdk11
+          multi-cache-enabled: false
+          arguments: runPluginVerifier -Pplugin.verifier.home.dir=${{ steps.properties.outputs.pluginVerifierHomeDir }}
