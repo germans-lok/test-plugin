@@ -12,7 +12,7 @@ class PikachuInsertInJavaActionTest : BasePlatformTestCase() {
 
         // When:
         myFixture.testAction(action)
-        //some changes
+        // some changes
 
         // Then:
         myFixture.checkResultByFile("ClassAfterPikachu.java")
