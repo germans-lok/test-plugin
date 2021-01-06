@@ -129,4 +129,4 @@ jobs:
         with:
           job-id: jdk11
           multi-cache-enabled: false
-          arguments: runPluginVerifier -Pplugin.verifier.home.dir=${{ steps.properties.outputs.pluginVerifierHomeDir }
+          arguments: runPluginVerifier -Pplugin.verifier.home.dir=${{ steps.properties.outputs.pluginVerifierHomeDir }}
