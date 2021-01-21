@@ -16,6 +16,8 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
     // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
     id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("org.sonarqube") version "3.0"
+    jacoco
 }
 
 // Import variables from gradle.properties file
@@ -128,5 +130,33 @@ tasks {
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html#specifying-a-release-channel
         channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
+    }
+
+    test {
+        finalizedBy("jacocoTestReport")
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.isEnabled = true
+            csv.isEnabled = false
+            html.isEnabled = false
+        }
+    }
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "germans-lok_test-plugin")
+        property("sonar.organization", "germans-lok")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "germans-lok_test-plugin")
+        property("sonar.organization", "germans-lok")
+        property("sonar.host.url", "https://sonarcloud.io")
     }
 }

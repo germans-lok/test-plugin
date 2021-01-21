@@ -40,6 +40,14 @@ jobs:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
 
+      # Cache sonar
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       # Run ktlint and tests
       - name: Run Linters and Test
         run: ./gradlew check
@@ -47,6 +55,12 @@ jobs:
       # Run verifyPlugin Gradle task
       - name: Verify Plugin
         run: ./gradlew verifyPlugin
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube --info
 
       # Publish test results
       - name: Publish Unit Test Results
