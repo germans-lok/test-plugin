@@ -1,35 +1,21 @@
-# GitHub Actions Workflow created for testing and preparing the plugin release in following steps:
-# - run test and verifyPlugin tasks,
-# - run buildPlugin task and prepare artifact for the further tests,
-# - run IntelliJ Plugin Verifier trigger only on push inside master and develop.
-#
-# Workflow is triggered on push and pull_request events.
-#
-# Docs:
-# - GitHub Actions: https://help.github.com/en/actions
-# - IntelliJ Plugin Verifier GitHub Action: https://github.com/ChrisCarini/intellij-platform-plugin-verifier-action
-#
-## JBIJPPTPL
+name: CI
 
-name: Build
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     types: [ opened, synchronize ]
 
 jobs:
-  # Run verifyPlugin and test Gradle tasks
-  test:
-    name: Test & Build
+  build:
     runs-on: ubuntu-latest
     outputs:
       name: ${{ steps.properties.outputs.name }}
       version: ${{ steps.properties.outputs.version }}
       changelog: ${{ steps.properties.outputs.changelog }}
       artifact: ${{ steps.properties.outputs.artifact }}
-    steps:
 
+    steps:
       # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v1
@@ -54,6 +40,14 @@ jobs:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
 
+      # Cache sonar
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       # Run ktlint and tests
       - name: Run Linters and Test
         run: ./gradlew check
@@ -61,6 +55,12 @@ jobs:
       # Run verifyPlugin Gradle task
       - name: Verify Plugin
         run: ./gradlew verifyPlugin
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube --info
 
       # Publish test results
       - name: Publish Unit Test Results
@@ -81,8 +81,8 @@ jobs:
           ARTIFACT="${NAME}-${VERSION}"
           echo "::set-output name=version::$VERSION"
           echo "::set-output name=name::$NAME"
-          echo "::set-output name=changelog::$CHANGELOG"
           echo "::set-output name=artifact::$ARTIFACT"
+
       # Build artifact using buildPlugin Gradle task
       - name: Build Plugin
         run: ./gradlew buildPlugin
@@ -99,7 +99,7 @@ jobs:
   verify:
     name: Verify
     if: github.event_name != 'pull_request'
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
 
