@@ -10,23 +10,6 @@
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.germanslok.testplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.germanslok.testplugin.services.MyProjectService"/>
+        <applicationConfigurable id="applicationConfigurable" displayName="Application Configurable" instance="com.github.germanslok.testplugin.ApplicationConfigurable"/>
     </extensions>
-
-    <applicationListeners>
-        <listener class="com.github.germanslok.testplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
-
-    <actions>
-        <action id="com.github.germanslok.testplugin.PikachuInsertInJavaAction" class="com.github.germanslok.testplugin.PikachuInsertInJavaAction"
-                text="Insert Pikachu" description="Insert pikachu inside your code">
-            <add-to-group group-id="JavaGenerateGroup1" anchor="last"/>
-        </action>
-        <action id="com.github.germanslok.testplugin.PikachuInsertInKotlinAction" class="com.github.germanslok.testplugin.PikachuInsertInKotlinAction"
-                text="Insert Pikachu" description="Insert pikachu inside your code">
-            <add-to-group group-id="KotlinGenerateGroup" anchor="last"/>
-        </action>
-    </actions>
 </idea-plugin>
